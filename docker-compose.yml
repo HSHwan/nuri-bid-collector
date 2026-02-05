@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: nuri-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: nuri_password
+      MYSQL_DATABASE: nuri_db
+      MYSQL_USER: nuri_user
+      MYSQL_PASSWORD: nuri_password
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  crawler:
+    build: .
+    container_name: nuri-crawler
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: tail -f /dev/null 
+
+volumes:
+  db_data:
