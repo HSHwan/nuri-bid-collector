@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional, Any
-from src.core.base_storage import BaseStorage
+from core.base_storage import BaseStorage
 
 class MySqlStorage(BaseStorage):
     def __init__(self, db_url: str):

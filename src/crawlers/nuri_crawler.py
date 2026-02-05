@@ -1,5 +1,5 @@
 from typing import List, Any
-from src.core.base_crawler import BaseCrawler
+from core.base_crawler import BaseCrawler
 
 class NuriCrawler(BaseCrawler):
     def _navigate_to_target(self):
