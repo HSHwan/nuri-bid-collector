@@ -44,19 +44,19 @@ chmod +x run.sh
 
 본 프로젝트는 **"지속 가능한 유지보수"**를 핵심 가치로 삼아, **계층형 아키텍처**와 **객체 지향 디자인 패턴**을 적용했습니다.
 
-### 1. Design Patterns
+### Design Patterns
 
 - **Template Method Pattern (`BaseCrawler`):**
-- 크롤링의 생명주기(`Setup` → `Maps` → `Extract` → `Teardown`)를 부모 클래스에서 제어합니다.
-- **의도:** 리소스 해제(`close`) 누락 방지 및 공통 에러 처리를 강제하여 프로세스 안정성을 보장합니다.
+    - 크롤링의 생명주기(`Setup` → `Maps` → `Extract` → `Teardown`)를 부모 클래스에서 제어합니다.
+    - **의도:** 리소스 해제(`close`) 누락 방지 및 공통 에러 처리를 강제하여 프로세스 안정성을 보장합니다.
 
 
 - **Strategy Pattern (`BaseStorage`):**
-- 데이터 저장소 로직을 추상화하여, 비즈니스 로직 수정 없이 저장 매체(MySQL ↔ CSV)를 유연하게 교체할 수 있습니다.
+    - 데이터 저장소 로직을 추상화하여, 비즈니스 로직 수정 없이 저장 매체(MySQL ↔ CSV)를 유연하게 교체할 수 있습니다.
 
 
 
-### 2. Project Structure
+### Project Structure
 
 역할과 책임에 따라 명확히 모듈화된 디렉토리 구조를 가집니다.
 
