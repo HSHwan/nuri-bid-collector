@@ -42,7 +42,7 @@ chmod +x run.sh
 
 ## 🏗️ Architecture & Design
 
-본 프로젝트는 **"지속 가능한 유지보수"**를 핵심 가치로 삼아, **계층형 아키텍처**와 **객체 지향 디자인 패턴**을 적용했습니다.
+본 프로젝트는 **"지속 가능한 유지보수"** 를 핵심 가치로 삼아, **계층형 아키텍처**와 **객체 지향 디자인 패턴**을 적용했습니다.
 
 ### Design Patterns
 
@@ -62,14 +62,18 @@ chmod +x run.sh
 
 ```text
 nuri-bid-collector/
-├── config/             # [Config] 실행 환경 및 검색 조건 설정 (YAML)
+├── config/             # [Config] 설정 파일 디렉토리
+│   ├── search.yaml     # ├── [Biz] 검색 조건 및 필터 설정
+│   └── system.yaml     # └── [Infra] DB 연결 및 시스템 환경 설정
 ├── src/
-│   ├── core/           # [Abstract] BaseCrawler, BaseStorage 등 추상 클래스
+│   ├── core/           # [Core] BaseCrawler, BaseStorage, Container (DI)
 │   ├── crawlers/       # [Impl] NuriCrawler (사이트별 구체적 로직)
 │   ├── storage/        # [Impl] MySqlStorage (DB 저장 로직)
 │   ├── models/         # [DTO] Pydantic 데이터 모델
-│   └── main.py         # [Entrypoint] 의존성 주입 및 실행
+│   ├── utils/          # [Util] ConfigLoader, Logger, CLI 파서
+│   └── main.py         # [Entrypoint] 애플리케이션 진입점
 ├── docker-compose.yml  # [Infra] DB 및 App 컨테이너 구성
+├── Dockerfile          # [Infra] Playwright 전용 이미지 빌드 설정
 ├── run.sh              # [Script] 자동 실행 스크립트 (Mac/Linux)
 ├── run.bat             # [Script] 자동 실행 스크립트 (Windows)
 └── README.md
