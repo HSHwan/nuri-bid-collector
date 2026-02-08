@@ -4,9 +4,10 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.core.base_storage import BaseStorage
-from src.models.bid_notice import BidNotice, BidDetail, BidAttachment
-from src.storage.entities import Base, BidNoticeEntity, BidNoticeDetailEntity, BidAttachmentEntity
+from core.base_storage import BaseStorage
+from models.bid_notice import BidNotice
+from storage.entities import Base, BidNoticeEntity
+from storage.mysql_mapper import MySqlBidMapper
 
 class MySqlStorage(BaseStorage):
     def __init__(self, db_url: str):
@@ -14,6 +15,7 @@ class MySqlStorage(BaseStorage):
         self.engine = None
         self.SessionLocal = None
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.mapper = MySqlBidMapper()
 
     def connect(self):
         """DB 연결 및 테이블 생성"""
@@ -22,9 +24,8 @@ class MySqlStorage(BaseStorage):
                 self.db_url,
                 pool_recycle=3600,
                 pool_size=10,
-                echo=False
+                echo=True
             )
-            # 테이블 자동 생성 (없을 경우)
             Base.metadata.create_all(bind=self.engine)
             self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
             self.logger.info(f"Connected to DB successfully.")
@@ -44,61 +45,8 @@ class MySqlStorage(BaseStorage):
         session: Session = self.SessionLocal()
         try:
             for item in data:
-                # ORM 객체 매핑
-                entity = BidNoticeEntity(
-                    notice_code=item.notice_code,
-                    degree=item.degree,
-                    title=item.title,
-                    status=item.status,
-                    category=item.category,
-                    process_type=item.process_type,
-                    date_posted=item.date_posted,
-                    bid_start_dt=item.bid_start_dt,
-                    bid_end_dt=item.bid_end_dt,
-                    opening_dt=item.opening_dt,
-                    contract_method=item.contract_method,
-                    bid_method=item.bid_method,
-                    succ_method=item.succ_method
-                )
-
-                # Detail 매핑 (1:1)
-                if item.detail_info:
-                    d = item.detail_info
-                    entity.detail = BidNoticeDetailEntity(
-                        notice_code=item.notice_code,
-                        degree=item.degree,
-                        doc_number=d.doc_number,
-                        manager_dept=d.manager_dept,
-                        manager_name=d.manager_name,
-                        construction_name=d.construction_name,
-                        completion_date=d.completion_date,
-                        site_name=d.site_name,
-                        client_name=d.client_name,
-                        client_address=d.client_address,
-                        total_area=d.total_area,
-                        household_cnt=d.household_cnt,
-                        budget_amt=d.budget_amt,
-                        base_price=d.base_price,
-                        briefing_yn=d.briefing_yn,
-                        briefing_dt=d.briefing_dt,
-                        briefing_place=d.briefing_place,
-                    )
-
-                # Attachments 매핑 (1:N)
-                entity.attachments = [
-                    BidAttachmentEntity(
-                        notice_code=item.notice_code,
-                        degree=item.degree,
-                        file_name=f.file_name,
-                        file_size=f.file_size,
-                        download_url=f.download_url
-                    ) for f in item.attachments
-                ]
-
-                # Upsert (Merge)
-                # PK가 같으면 Update, 없으면 Insert
+                entity = self.mapper.to_entity(item)
                 session.merge(entity)
-            
             session.commit()
             self.logger.info(f"Successfully saved/updated {len(data)} records.")
 
