@@ -40,7 +40,7 @@ class BidDetail(BaseModel):
 
 # 입찰 공고
 class BidNotice(BaseModel):
-    # 식별자 (Composite Key)
+    # 식별자
     notice_code: str = Field(..., description="공고번호")
     degree: str = Field(..., description="차수 (예: 000)")
 
