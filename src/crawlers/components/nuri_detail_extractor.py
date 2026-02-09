@@ -16,6 +16,15 @@ class NuriDetailExtractor:
         'briefing_yn_text': (["현장설명회대상여부", "현장설명여부", "현장설명"], 20), 
         'briefing_place': (["현장설명회장소", "현장설명장소"], 100),
         'client_name_detail': (["수요기관", "발주기관", "공고기관"], 50),
+        'date_posted': (["게시일시", "공고일시", "입력일시", "공고일자"], 30),
+        'bid_start_dt': (["입찰서접수개시일시", "입찰개시일시", "투찰개시일시"], 30),
+        'bid_end_dt': (["입찰서접수마감일시", "입찰마감일시", "투찰마감일시"], 30),
+        'opening_dt': (["개찰일시"], 30),
+        'contract_method': (["계약방법"], 50),
+        'bid_method': (["입찰방식", "입찰방법"], 50),
+        'succ_method': (["낙찰자결정방법", "낙찰방법"], 100),
+        'notice_type': (["공고구분"], 20),
+        're_bid_allow': (["재입찰허용여부", "재입찰"], 10),
     }
 
     def __init__(self, logger):
@@ -35,7 +44,14 @@ class NuriDetailExtractor:
         
         # 데이터 병합 (상세 페이지 데이터 + 목록 데이터)
         final_data = list_data.copy()
-        final_data.update(detail_data)
+
+        for key, value in detail_data.items():
+            # 값이 비어있지 않은 경우에만 업데이트
+            if value:
+                final_data[key] = value
+            # 키가 아예 없던 경우에는 빈 값이라도 추가
+            elif key not in final_data:
+                final_data[key] = value
         
         # 제목 보정
         if header_title:

@@ -9,40 +9,42 @@ class NuriParser:
         self.logger = logger
         self.extractor = NuriDetailExtractor(logger)
 
-    def parse_list_row(self, row: Locator) -> Tuple[Dict[str, str], Locator]:
+    def parse_list_row(self, row: Locator) -> Dict[str, Any]:
         """목록 행 파싱"""
-        notice_code = ""
-        title = ""
-        link = None
-
+        data = {
+            "notice_code": "",
+            "title": "",
+            "link": None,
+            "date_posted": "",
+            "category": "",
+            "process_type": ""
+        }
         try:
+            cells = row.locator("td")
+            
             # 공고번호 추출
-            code_col = row.locator("td[col_id='bidNtceNo']")
-            if code_col.count() > 0:
-                notice_code = code_col.inner_text().strip()
-            else:
-                # 백업: 2번째 컬럼
-                notice_code = row.locator("td").nth(1).inner_text().strip()
-
-            # 제목 및 링크 요소 추출
-            title_col = row.locator("td[col_id='bidPbancNm']")
-            if title_col.count() > 0:
-                link = title_col.locator("a").first
-                title = link.inner_text().strip()
-            else:
-                # 백업: 링크 태그 검색
-                links = row.locator("a").all()
-                for l in links:
-                    txt = l.inner_text().strip()
-                    if len(txt) > 5:
-                        link = l
-                        title = txt
-                        break
+            data["notice_code"] = cells.nth(1).inner_text().strip()
+            
+            # 제목 추출
+            title_cell = cells.nth(2)
+            data["title"] = title_cell.inner_text().strip()
+            data["link"] = title_cell.locator("a").first
+            
+            # 공고구분, 공고분류 추출
+            data["process_type"] = cells.nth(3).inner_text().strip()
+            data["category"] = cells.nth(4).inner_text().strip()
+            
+            # 공고일자 추출
+            date_posted = cells.nth(19).inner_text().strip()
+            if date_posted:
+                date_posted = date_posted.replace("/", "-")
+            data["date_posted"] = date_posted
+            
+            return data
 
         except Exception as e:
-            self.logger.warning(f"List row parsing warning: {e}")
-
-        return notice_code, title, link
+            self.logger.error(f"Error parsing list row: {e}")
+            return data
 
     def parse_detail(self, page: Page, list_data: Dict[str, Any]) -> Optional[BidNotice]:
         """상세 페이지 파싱"""

@@ -18,19 +18,29 @@ class BidFactory:
         detail = BidFactory._create_bid_detail(raw_data)
         
         # 날짜 포맷팅
-        date_posted = raw_data.get('date_posted', '')
-        if date_posted:
-            date_posted = date_posted.split(" ")[0].replace("/", "-")
+        def fmt_date(d_str):
+            if not d_str or not isinstance(d_str, str):
+                return None
+            temp = d_str.replace("/", "-").strip()
+            temp = re.sub(r"(\d{4}-\d{2}-\d{2})(\d{2}:\d{2})", r"\1 \2", temp)
+            return temp
 
         # 최종 객체 반환
         return BidNotice(
-            notice_code="", # 상위에서 주입
-            degree="",      # 상위에서 주입
+            notice_code="", # Crawler 레벨에서 주입됨
+            degree="",      # Crawler 레벨에서 주입됨
             title=raw_data.get('title', ''),
             status=raw_data.get('status', '게시'),
-            category="공사",
-            process_type="일반",
-            date_posted=date_posted,
+            category=raw_data.get('category'),
+            process_type=raw_data.get('process_type'),
+            date_posted=fmt_date(raw_data.get('date_posted')),
+            bid_start_dt=fmt_date(raw_data.get('bid_start_dt')),
+            bid_end_dt=fmt_date(raw_data.get('bid_end_dt')),
+            opening_dt=fmt_date(raw_data.get('opening_dt')),
+            contract_method=raw_data.get('contract_method', ''),
+            bid_method=raw_data.get('bid_method', ''),
+            succ_method=raw_data.get('succ_method', ''),
+            collected_at=None,
             detail_info=detail,
             attachments=attachments
         )

@@ -174,8 +174,6 @@ class NuriNavigator:
             if not link_element.is_visible():
                 self.logger.warning("Link element not visible.")
                 return False
-
-            self.logger.info("Clicking detail link...")
             
             # 클릭
             try: link_element.evaluate("el => el.click()")
@@ -202,3 +200,4 @@ class NuriNavigator:
         """목록으로 복귀"""
         self.page.go_back()
         self.page.locator("table[id*='grdBidPbancList_body_table']").first.wait_for(state="visible", timeout=10000)
+        time.sleep(0.5)
