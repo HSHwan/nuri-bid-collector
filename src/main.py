@@ -1,11 +1,12 @@
 import sys
 import os
 import logging
-from utils.cli import parse_args
-from utils.config_loader import load_app_config
-from core.container import AppContainer
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from src.utils.cli import parse_args
+from src.utils.config_loader import load_app_config
+from src.core.container import AppContainer
 
 logging.basicConfig(
     level=logging.INFO,

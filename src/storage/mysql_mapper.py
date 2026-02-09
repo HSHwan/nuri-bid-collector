@@ -1,5 +1,5 @@
-from models.bid_notice import BidNotice, BidDetail, BidAttachment
-from storage.entities import BidNoticeEntity, BidNoticeDetailEntity, BidAttachmentEntity
+from src.models.bid_notice import BidNotice, BidDetail, BidAttachment
+from src.storage.entities import BidNoticeEntity, BidNoticeDetailEntity, BidAttachmentEntity
 
 class MySqlBidMapper:
     """Pydantic DTO를 MySQL Entity로 변환하는 Mapper 클래스"""

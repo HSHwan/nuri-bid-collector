@@ -4,10 +4,10 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from core.base_storage import BaseStorage
-from models.bid_notice import BidNotice
-from storage.entities import Base, BidNoticeEntity
-from storage.mysql_mapper import MySqlBidMapper
+from src.core.base_storage import BaseStorage
+from src.models.bid_notice import BidNotice
+from src.storage.entities import Base, BidNoticeEntity
+from src.storage.mysql_mapper import MySqlBidMapper
 
 class MySqlStorage(BaseStorage):
     def __init__(self, db_url: str):

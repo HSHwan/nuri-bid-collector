@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Text, ForeignKey, BigInteger, JSON
+from sqlalchemy import Column, String, Integer, DateTime, Text, BigInteger, JSON, ForeignKeyConstraint
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.sql import func
 
@@ -47,7 +47,11 @@ class BidNoticeDetailEntity(Base):
     
     # Composite FK
     __table_args__ = (
-        ForeignKey('bid_notices.notice_code', 'bid_notices.degree'),
+        ForeignKeyConstraint(
+            ['notice_code', 'degree'],
+            ['bid_notices.notice_code', 'bid_notices.degree'],
+            ondelete='CASCADE'
+        ),
         {'comment': '입찰공고 상세 정보'}
     )
 
@@ -87,7 +91,11 @@ class BidAttachmentEntity(Base):
     
     # Composite FK
     __table_args__ = (
-        ForeignKey('bid_notices.notice_code', 'bid_notices.degree'),
+        ForeignKeyConstraint(
+            ['notice_code', 'degree'],
+            ['bid_notices.notice_code', 'bid_notices.degree'],
+            ondelete='CASCADE'
+        ),
         {'comment': '입찰공고 첨부파일'}
     )
 
