@@ -1,5 +1,5 @@
 import time
-from playwright.sync_api import Page
+from playwright.sync_api import Page, Locator
 from src.core.page_context import PageContext
 
 class NuriNavigator:
@@ -59,10 +59,48 @@ class NuriNavigator:
                 try: self.page.get_by_label("입찰공고명").fill(config['keyword'])
                 except: self.page.locator("#mf_wfm_container_tbxBidPbancNm").fill(config['keyword'])
             
-            # 날짜 (1개월)
-            preset = config.get('date', {}).get('preset_value', '1개월')
-            try: self.page.get_by_text(preset, exact=True).click()
-            except: pass
+            # 날짜 설정
+            date_config = config.get('date', {})
+            mode = date_config.get('mode', 'preset')
+
+            if mode == 'manual':
+                start_date = date_config.get('start_date', '')
+                end_date = date_config.get('end_date', '')
+                
+                if start_date and end_date:
+                    self.logger.info(f"Setting date range (Force Input): {start_date} ~ {end_date}")
+                    
+                    def force_input_date(target_locator: Locator, date_value: str):
+                        if not target_locator.is_visible(): return
+                        
+                        target_locator.click(force=True)
+                        
+                        target_locator.evaluate("""el => { 
+                            el.removeAttribute('readonly'); 
+                            el.classList.remove('udcDateReadOnly');
+                            el.readOnly = false;
+                        }""")
+                        
+                        target_locator.clear()
+                        target_locator.type(date_value, delay=10)
+                        target_locator.press("Tab")
+                        time.sleep(0.2)
+
+                    # 공고게시일자 행 찾기
+                    date_row = self.page.locator("tr").filter(has_text="공고게시일자")
+                    
+                    # 시작일 입력
+                    force_input_date(date_row.locator("input[title*='시작 날짜']"), start_date)
+                    
+                    # 종료일 입력
+                    force_input_date(date_row.locator("input[title*='종료 날짜']"), end_date)
+            else:
+                # 기간 버튼(Preset) 클릭 모드
+                preset = date_config.get('preset_value', '1개월')
+                try: 
+                    self.page.get_by_text(preset, exact=True).click()
+                except: 
+                    self.logger.warning(f"Failed to click date preset: {preset}")
 
             # 드롭다운
             dropdowns = {
@@ -73,6 +111,7 @@ class NuriNavigator:
                 "contract_method": "계약방법",
                 "selection_method": "낙찰방법"
             }
+
             for key, label in dropdowns.items():
                 val = config.get(key)
                 if val and val != "전체":
@@ -81,7 +120,7 @@ class NuriNavigator:
                         if t.is_visible(): t.select_option(label=val)
                     except Exception as e:
                         self.logger.warning(f"Failed to set dropdown {label}: {e}")
-            
+
             # 검색 버튼 클릭
             self.page.get_by_role("button", name="검색", exact=True).click()
             self.page.wait_for_load_state("networkidle")
@@ -161,26 +200,5 @@ class NuriNavigator:
 
     def go_back_to_list(self):
         """목록으로 복귀"""
-        grid_selector = "table[id*='grdBidPbancList_body_table']"
-        
-        try:
-            self.logger.info("Returning to list...")
-            back_btn = self.page.get_by_text("목록", exact=True)
-            
-            if not back_btn.is_visible():
-                back_btn = self.page.locator("input[value='목록']").first
-
-            if back_btn.is_visible():
-                back_btn.click()
-            
-            else:
-                self.logger.warning("'List' button not found. Executing Browser Back.")
-                self.page.go_back()
-            
-            self.page.locator(grid_selector).first.wait_for(state="visible", timeout=15000)
-            time.sleep(1.0)
-
-        except Exception as e:
-            self.logger.error(f"Failed to return to list: {e}")
-            self.page.go_back()
-            self.page.locator(grid_selector).first.wait_for(state="visible", timeout=15000)
+        self.page.go_back()
+        self.page.locator("table[id*='grdBidPbancList_body_table']").first.wait_for(state="visible", timeout=10000)
