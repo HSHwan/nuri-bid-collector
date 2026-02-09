@@ -48,10 +48,10 @@ class BidNotice(BaseModel):
     title: str = Field(..., description="공고명")
     status: str = Field(..., description="공고상태 (게시/마감)")
     category: Optional[str] = None          # 업무분류 (공사/용역)
-    process_type: Optional[str] = None      # 공고처리그분 (등록/취소)
+    process_type: Optional[str] = None      # 공고처리구분 (등록/취소)
     
     # 일정 정보
-    date_posted: str = Field(..., description="공고게시일자 (YYYY-MM-DD)")
+    date_posted: Optional[datetime] = None  # 공고게시일시
     bid_start_dt: Optional[datetime] = None # 입찰서 접수 시작
     bid_end_dt: Optional[datetime] = None   # 입찰서 접수 마감
     opening_dt: Optional[datetime] = None   # 개찰일시

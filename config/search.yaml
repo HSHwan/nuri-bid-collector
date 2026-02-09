@@ -6,19 +6,19 @@ status: "게시"
 notice_code: ""
 
 # 입찰공고명 (키워드 검색)
-keyword: ""
+keyword: "공사"
 
 # 공고게시일자 설정
 # mode: "preset" (기간 버튼 클릭) 또는 "manual" (날짜 직접 입력)
 date:
-  mode: "preset"
+  mode: "manual"
   
   # mode가 "preset"일 때 선택할 값 [1개월, 3개월, 6개월]
   preset_value: "1개월"
   
   # mode가 "manual"일 때 입력할 값 (Format: "YYYYMMDD")
-  start_date: ""
-  end_date: ""
+  start_date: "20260201"
+  end_date: "20260208"
 
 # 공고분류 
 # 옵션: [전체, 물품, 용역, 공사]

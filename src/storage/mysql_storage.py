@@ -24,7 +24,7 @@ class MySqlStorage(BaseStorage):
                 self.db_url,
                 pool_recycle=3600,
                 pool_size=10,
-                echo=True
+                echo=False
             )
             Base.metadata.create_all(bind=self.engine)
             self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
