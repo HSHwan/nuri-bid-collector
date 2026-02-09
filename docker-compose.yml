@@ -25,16 +25,16 @@ services:
 
   crawler:
     build: .
-    container_name: nuri-crawler
+    container_name: nuri_crawler
+    volumes:
+      - .:/app
+    environment:
+      - TZ=Asia/Seoul
+      - DB_HOST=db
+    tty: true
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./config:/app/config
-      - ./logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-    command: tail -f /dev/null 
 
 volumes:
   db_data:
