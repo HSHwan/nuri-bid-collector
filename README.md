@@ -106,7 +106,7 @@ nuri-bid-collector/
 - **OS:** Windows 10/11, macOS, Linux (Ubuntu 20.04+)
 - **Python:** 3.9 이상 (Type Hinting 및 최신 문법 사용)
 - **Libraries:**
-    - `playwright (>=1.39.0)`: 동적 웹 페이지 제어 및 렌더링
+    - `playwright (>=1.58.0)`: 동적 웹 페이지 제어 및 렌더링
     - `sqlalchemy (>=2.0.0)`: ORM 기반 데이터베이스 추상화
     - `pymysql`: MySQL 드라이버 (순수 Python 구현체)
     - `pydantic (>=2.0.0)`: 엄격한 데이터 유효성 검사 및 스키마 정의
