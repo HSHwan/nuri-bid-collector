@@ -75,8 +75,6 @@ chmod +x run.sh
 - **Strategy Pattern (`BaseStorage`):**
     - 데이터 저장소 로직을 추상화하여, 비즈니스 로직 수정 없이 저장 매체(MySQL ↔ CSV)를 유연하게 교체할 수 있습니다.
 
-
-
 ### Project Structure
 
 역할과 책임에 따라 명확히 모듈화된 디렉토리 구조를 가집니다.
@@ -101,17 +99,18 @@ nuri-bid-collector/
 
 ---
 
-## 🛠️ Tech Stack & Environment
+## 🛠️ Environment & Dependencies
 
-안정적인 운영을 위해 검증된 최신 기술 스택을 채택했습니다.
+본 프로젝트는 다음 환경에서 개발 및 테스트되었습니다. 로컬 실행 시 아래 버전 충족을 권장합니다.
 
-| Component | Technology | Selection Reason |
-| --- | --- | --- |
-| **Language** | Python 3.9+ | Type Hinting 지원 및 최신 라이브러리 호환성 |
-| **Core** | `Playwright` | 동적 페이지의 `Auto-waiting` 지원 및 Selenium 대비 빠른 속도 |
-| **Validation** | `pydantic` | 런타임 데이터 검증 및 객체 매핑 |
-| **ORM** | `sqlalchemy` | SQL Injection 방지 및 DB 추상화 |
-| **Infra** | `Docker` | 환경 독립적인 실행 보장 |
+- **OS:** Windows 10/11, macOS, Linux (Ubuntu 20.04+)
+- **Python:** 3.9 이상 (Type Hinting 및 최신 문법 사용)
+- **Libraries:**
+    - `playwright (>=1.39.0)`: 동적 웹 페이지 제어 및 렌더링
+    - `sqlalchemy (>=2.0.0)`: ORM 기반 데이터베이스 추상화
+    - `pymysql`: MySQL 드라이버 (순수 Python 구현체)
+    - `pydantic (>=2.0.0)`: 엄격한 데이터 유효성 검사 및 스키마 정의
+    - `pyyaml`: 설정 파일 로딩
 
 ---
 
@@ -128,6 +127,20 @@ cd nuri-bid-collector
 docker-compose up -d --build
 
 # 3. Check Logs
-docker-compose logs -f crawler
+docker-compose logs -f nuri-crawler
 
 ```
+
+## 🚫 한계 및 개선 아이디어
+
+### 한계점
+
+1. **브라우저 리소스 부하:** Headless 브라우저를 구동하므로 단순 HTTP 요청 방식보다 CPU/Memory 사용량이 높습니다.
+2. **DOM 의존성:** 웹사이트의 Class Name이나 ID 구조가 변경될 경우 파서(`Parser`) 코드의 수정이 필요합니다.
+3. **동기 처리 속도:** 안정성을 위해 순차적으로 페이지를 탐색하므로, 대량의 데이터 수집 시 막대한 시간이 소요됩니다.
+
+### 개선 아이디어
+
+1. **비동기 병렬 처리:** `playwright.async_api`를 도입하여, 목록 수집과 상세 페이지 파싱을 비동기로 처리해 수집 속도를 향상시킬 수 있습니다.
+2. **Headless 탐지 우회 강화:** User-Agent 로테이션 및 Stealth 플러그인을 적용하여 차단 가능성을 최소화합니다.
+3. **알림 시스템 통합:** 크롤링 완료 또는 에러 발생 시 Slack/Email로 리포트를 전송하는 기능을 추가하여 모니터링 편의성을 높입니다.
