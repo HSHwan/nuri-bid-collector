@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from playwright.sync_api import sync_playwright, Browser, Page, Playwright, BrowserContext
+from src.core.page_context import PageContext
 
 class BaseCrawler(ABC):
     """
@@ -17,6 +18,7 @@ class BaseCrawler(ABC):
         self.browser: Optional[Browser] = None
         self.context: Optional[BrowserContext] = None
         self.page: Optional[Page] = None
+        self.ctx: Optional[PageContext] = None
 
     def run(self) -> List[Any]:
         results = []
@@ -53,6 +55,8 @@ class BaseCrawler(ABC):
         self.context.set_default_timeout(pw_config.get('timeout', 30000))
         
         self.page = self.context.new_page()
+        self.ctx = PageContext(self.page)
+
         self.logger.info("Browser launched successfully.")
 
     def _teardown_browser(self):
