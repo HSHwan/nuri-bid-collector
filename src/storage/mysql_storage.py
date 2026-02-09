@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import List, Dict, Optional
 from sqlalchemy import create_engine, func
@@ -20,6 +21,10 @@ class MySqlStorage(BaseStorage):
     def connect(self):
         """DB 연결 및 테이블 생성"""
         try:
+            env_db_host = os.getenv('DB_HOST')
+            if env_db_host:
+                self.logger.info(f"Docker environment detected. Switching DB host to: {env_db_host}")
+                self.db_url = self.db_url.replace("localhost", env_db_host)
             self.engine = create_engine(
                 self.db_url,
                 pool_recycle=3600,
