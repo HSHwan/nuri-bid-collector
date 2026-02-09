@@ -8,4 +8,4 @@ playwright:
   max_retries: 3
 
 mysql:
-  db_url: "mysql+pymysql://nuri_user:nuri_password@localhost:3306/nuri_db"
+  db_url: "mysql+pymysql://nuri_user:nuri_password@localhost:3306/nuri_db?charset=utf8mb4"
